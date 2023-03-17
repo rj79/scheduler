@@ -2,6 +2,9 @@ SOURCES = $(shell find . \( -name '*.h' -o -name '*.cpp' \) | grep -v .pio)
 
 all: test
 
+clean:
+	pio run -t clean
+
 blink:
 	pio run -e example_blink -t upload
 
