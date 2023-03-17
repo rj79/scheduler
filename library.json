@@ -1,0 +1,23 @@
+{
+    "name": "scheduler",
+    "version": "0.1-dev",
+    "description": "Simple non-preemptive scheduler library for microcontrollers.",
+    "keywords": "scheduler, ATmega328P, ESP8266, ESP32, microcontroller",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/rj79/scheduler.git"
+    },
+    "authors": [
+        {
+            "name": "Robert Johansson",
+            "email": "robertrockar@live.com",
+            "url": "",
+            "maintainer": true
+        }
+    ],
+    "license": "MIT",
+    "homepage": "",
+    "dependencies": {},
+    "frameworks": "Arduino",
+    "platforms": "*"
+}
