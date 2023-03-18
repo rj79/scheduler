@@ -68,7 +68,7 @@ The Scheduler will attempt to run each task at the given interval. On average th
 
 # Running the examples
 ## Using VSCode with PlatformIO
-1. Connect an Arduino-compatible board via USB (e.g. Uno, Lolin D2 Mini or similar)
+1. Connect an Arduino-compatible board via USB (e.g. Uno, Lolin D1 Mini or similar)
 2. Click the PlatformIO "ant" icon in the toolbar to the left.
 3. Expand the project task starting example_blink_<your_board name>
 4. Click "Upload and Monitor"
@@ -83,7 +83,7 @@ make example_blink
 The unit test are located in the tests/test_embedded folder.
 
 ## Using VSCode with PlatformIO
-1. Connect an Arduino-compatible board via USB (e.g. Uno, Lolin D2 Mini or similar)
+1. Connect an Arduino-compatible board via USB (e.g. Uno, Lolin D1 Mini or similar)
 2. Check platform.ini that there is a test_<boardname> environment that matches your board.
 3. Click the testing icon in the toolbar to the left.
 4. Click the play icon next to the test environment name that matches your board.
