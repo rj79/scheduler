@@ -75,9 +75,9 @@ The Scheduler will attempt to run each task at the given interval. On average th
 
 ## Using command line
 ```sh
-make example_blink
+make example_blink_lolin_c3_mini
 ```
-
+When using a Lolin C3 Mini board.
 
 # Running the unit tests
 The unit test are located in the tests/test_embedded folder.
