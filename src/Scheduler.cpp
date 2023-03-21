@@ -23,7 +23,7 @@ bool TTaskInfo::operator<(const TTaskInfo& other) const
 String TTaskInfo::toString() const
 {
     char buffer[64];
-    snprintf(buffer, sizeof(buffer), "<TaskInfo \"%s\" interval=%ld next_start=%ld", Name.c_str(), Interval, NextStart);
+    snprintf(buffer, sizeof(buffer), "<TaskInfo \"%s\" interval=%lu next_start=%lu", Name.c_str(), Interval, NextStart);
     return String(buffer);
 }
 

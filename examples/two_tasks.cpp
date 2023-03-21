@@ -27,7 +27,7 @@ class PrintTask: public ITask
 public:
     void taskStep() {
         char buffer[64];
-        snprintf(buffer, sizeof(buffer), "Time since start: %ld ms\n", millis());
+        snprintf(buffer, sizeof(buffer), "Time since start: %lu ms\n", millis());
         Serial.print(buffer);
     }
 };
