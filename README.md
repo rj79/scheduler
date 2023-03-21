@@ -74,10 +74,21 @@ The Scheduler will attempt to run each task at the given interval. On average th
 4. Click "Upload and Monitor"
 
 ## Using command line
+For Arduino Uno module (ATMega 328P):
 ```sh
-make example_blink_lolin_c3_mini
+pio run -e example_blink_uno -t upload
+pio run -e example_two_tasks_uno -t upload -t monitor
 ```
-When using a Lolin C3 Mini board.
+For Lolin D1 module (ESP8266):
+```sh
+pio run -e example_blink_lolin_d1 -t upload
+pio run -e example_two_tasks_lolin_d1 -t upload -t monitor
+```
+For Lolin C3 module (ESP32-C3):
+```sh
+pio run -e example_blink_lolin_c3_mini -t upload
+pio run -e example_two_tasks_lolin_c3_mini -t upload -t monitor
+```
 
 # Running the unit tests
 The unit test are located in the tests/test_embedded folder.
@@ -90,7 +101,16 @@ The unit test are located in the tests/test_embedded folder.
 
 ## Using Command line
 1. Open a console and go to the directory of the library.
-2. Type: 
+2. Depending on your board type:
+For Arduino Uno module (ATMega 328P):
 ```sh
-make test
+pio test -e test_arduino_uno
+```
+For Lolin D1 module (ESP8266):
+```sh
+pio test -e test_lolin_d1
+```
+For Lolin C3 module (ESP32-C3):
+```sh
+pio test -e test_lolin_c3_mini
 ```
