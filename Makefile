@@ -29,6 +29,9 @@ test_arduino_uno: $(SOURCES)
 test_lolin_d1: $(SOURCES)
 	pio test -e test_lolin_d1
 
+test_lolin_d1_mini_pro: $(SOURCES)
+	pio test -e test_lolin_d1_mini_pro
+
 test_esp32_c3: $(SOURCES)
 	pio test -e test_lolin_c3_mini
 
