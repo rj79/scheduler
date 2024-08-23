@@ -1,6 +1,6 @@
 {
     "name": "scheduler",
-    "version": "0.1-dev",
+    "version": "0.2.0",
     "description": "Simple non-preemptive scheduler library for microcontrollers.",
     "keywords": "scheduler, ATmega328P, ESP8266, ESP32, microcontroller",
     "repository": {

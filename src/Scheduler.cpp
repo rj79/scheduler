@@ -4,6 +4,7 @@ TTaskInfo::TTaskInfo(ITask* task=nullptr) :
     Task(task),
     Interval(0),
     NextStart(0),
+    Started(false),
     Overflow(false),
     Name("")
 {
@@ -39,6 +40,8 @@ ITask* Scheduler::addTask(ITask* task, uint32_t interval, String name)
         if (TaskInfos[i].Task == nullptr) {
             TaskInfos[i].Task = task;
             TaskInfos[i].Interval = interval;
+            TaskInfos[i].Started = false;
+            TaskInfos[i].Overflow = false;
             TaskInfos[i].NextStart = 0;
             TaskInfos[i].Name = name;
             TaskCount++;
@@ -48,17 +51,29 @@ ITask* Scheduler::addTask(ITask* task, uint32_t interval, String name)
     return nullptr;
 }
 
+void Scheduler::removeTask(ITask* task)
+{
+    for (int i = 0; i < MAX_TASKS; ++i) {
+        if (TaskInfos[i].Task == task) {
+            TaskInfos[i].Task = nullptr;
+            TaskCount--;
+            return;
+        }
+    }
+}
+
 /**
  * Reschedules a task. The next execution will be scheduled at current planned 
  * execution start + task interval.
 */
 void Scheduler::reschedule(TTaskInfo* task_info) 
 {
-    if (task_info->NextStart == 0 && !task_info->Overflow) {
+    if (!task_info->Started) {
         // If this will be the first execution, initiate the next start to 
         // something sensible.
         // The naive strategy is to try to spread out the tasks over the 
         // timeline so they don't start at the same time or overlap.
+        task_info->Started = true;
         task_info->NextStart = millis() + task_info->Interval;
     } 
     else {
@@ -78,8 +93,10 @@ void Scheduler::reschedule(TTaskInfo* task_info)
             task_info->Overflow = true;
             Overflowed++;
             if (Overflowed >= TaskCount) {
-                for (int i = 0; i < TaskCount; ++i) {
-                    TaskInfos[i].Overflow = false;
+                for (int i = 0; i < MAX_TASKS; ++i) {
+                    if (TaskInfos[i].Task != nullptr) {
+                        TaskInfos[i].Overflow = false;
+                    }
                 }
                 Overflowed = 0;
             }
@@ -136,17 +153,45 @@ void Scheduler::begin(unsigned long timeout)
     }
 }
 
+void Scheduler::step()
+{
+    // Select task to execute
+    TTaskInfo* task_info = nextTask();
+
+    if (task_info == nullptr) {
+        Serial.println("Warning: No more task to execute.");
+        return;
+    }
+
+    unsigned int now = millis();
+    if (!task_info->Started) {
+        task_info->Task->taskStep();
+        reschedule(task_info);
+    } 
+    else {
+        if (now >= task_info->NextStart) {
+            task_info->Task->taskStep();
+            reschedule(task_info);
+        }
+    }
+}
+
 TTaskInfo* Scheduler::nextTask()
 {
     if (TaskCount == 0) {
         return nullptr;
     }
 
-    TTaskInfo* result = &TaskInfos[0];
+    TTaskInfo* result = nullptr;
 
-    for (int i = 1; i < TaskCount; ++i) {
-        if (TaskInfos[i] < *result) {
-            result = &(TaskInfos[i]);
+    for (int i = 0; i < MAX_TASKS; ++i) {
+        if (TaskInfos[i].Task != nullptr) {
+            if (result == nullptr) {
+                result = &(TaskInfos[i]);
+            }
+            else if (TaskInfos[i] < *result) {
+                result = &(TaskInfos[i]);
+            }
         }
     }
 

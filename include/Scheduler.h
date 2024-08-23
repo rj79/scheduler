@@ -18,6 +18,7 @@ public:
     ITask* Task;
     uint32_t Interval;
     uint32_t NextStart;
+    bool Started;
     bool Overflow;
     String Name;
 
@@ -51,7 +52,7 @@ public:
     ITask* addTask(ITask* task, uint32_t interval_ms, String name="");
 
     /**
-     * Will remove a task from the list of tasks to execute. 
+     * Will remove a task from the set of tasks to execute. 
     */
     void removeTask(ITask* task);
 
@@ -61,6 +62,14 @@ public:
      * specified number of milliseconds.
     */
     void begin(unsigned long timeout=0);
+    
+    /**
+     * Runs the scheduler and returns immediately. This is useful in case giving
+     * up control completely to the scheduler using begin() is not suitable.
+     * Call step() from within the loop() function. step() will execute the 
+     * tasks when it's time.
+     */
+    void step();
 
 private:
     TTaskInfo TaskInfos[MAX_TASKS];
