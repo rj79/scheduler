@@ -73,16 +73,56 @@ void test_step() {
     TEST_ASSERT_TRUE(task1.stepCount() - 100 <= 1);
 }
 
+void test_step_only_idle_task()
+{
+    Scheduler scheduler;
+    MockTask idleTask;
+    scheduler.setIdleTask(&idleTask);
+
+    scheduler.step();
+    TEST_ASSERT_EQUAL(1, idleTask.stepCount());
+    scheduler.step();
+    TEST_ASSERT_EQUAL(2, idleTask.stepCount());
+}
+
+void test_begin_only_idle_task()
+{
+    Scheduler scheduler;
+    MockTask idleTask;
+    scheduler.setIdleTask(&idleTask);
+
+    scheduler.begin(100);
+    TEST_ASSERT_GREATER_THAN_INT(2, idleTask.stepCount());
+}
+
+void test_both_interval_and_idle_task()
+{
+    Scheduler scheduler;
+    MockTask idleTask;
+    MockTask task1;
+
+    scheduler.setIdleTask(&idleTask);
+    scheduler.addTask(&task1, 10);
+    scheduler.begin(100);
+    TEST_ASSERT_LESS_THAN(1, 10 - task1.stepCount());
+    TEST_ASSERT_GREATER_THAN(1000, idleTask.stepCount());
+}
+
 int runUnityTests(void) 
 {
-    delay(2000);
+    delay(500);
     UNITY_BEGIN();
+
     RUN_TEST(test_create);
     RUN_TEST(test_one_task_timeout_accuracy_short);
     RUN_TEST(test_one_task_accuracy);
     RUN_TEST(test_two_tasks_accuracy);
     RUN_TEST(test_remove_task);
-    RUN_TEST(test_step);    
+    RUN_TEST(test_step);
+    RUN_TEST(test_step_only_idle_task);
+    RUN_TEST(test_begin_only_idle_task);
+    RUN_TEST(test_both_interval_and_idle_task);
+    
     return UNITY_END();
 }
 

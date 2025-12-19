@@ -48,8 +48,17 @@ public:
      * @param interval The interval in milliseconds with which the task should
      *  be run.
      * @param name An optional name which can be used for debugging purposes.
+     * @return The task if it was added, nullptr if the task could not be added.
     */
     ITask* addTask(ITask* task, uint32_t interval_ms, String name="");
+
+    /**
+     * Sets one task as idle task. The idle task will only be run when there 
+     * is time in between scheduled tasks, if any.
+     * @param task The idle task.
+     * @return The task if it was set as idle task, nullptr otherwise.
+     */
+    ITask* setIdleTask(ITask* task);
 
     /**
      * Will remove a task from the set of tasks to execute. 
@@ -74,10 +83,12 @@ public:
 private:
     TTaskInfo TaskInfos[MAX_TASKS];
     uint8_t TaskCount;
+    ITask* IdleTask;
     
     TTaskInfo* nextTask();
     uint8_t Overflowed;
     void reschedule(TTaskInfo* task_info);
+    bool internalStep();
 };
 
 #endif

@@ -29,7 +29,8 @@ String TTaskInfo::toString() const
 }
 
 Scheduler::Scheduler() :
-    TaskCount(0)
+    TaskCount(0),
+    IdleTask(nullptr)
 {
     // Empty
 }
@@ -49,6 +50,12 @@ ITask* Scheduler::addTask(ITask* task, uint32_t interval, String name)
         }
     }
     return nullptr;
+}
+
+ITask* Scheduler::setIdleTask(ITask* task)
+{
+    IdleTask = task;
+    return IdleTask;
 }
 
 void Scheduler::removeTask(ITask* task)
@@ -104,44 +111,58 @@ void Scheduler::reschedule(TTaskInfo* task_info)
     }
 }
 
-void Scheduler::begin(unsigned long timeout)
+bool Scheduler::internalStep()
 {
-    bool useTimeout = (timeout > 0);
-
     TTaskInfo* task_info = nullptr;
-    unsigned long now = 0;
-
+    
     // Select first task to execute
     task_info = nextTask();
 
-    if (task_info == nullptr) {
-        Serial.println("Error: No task to execute.");
-        return;
+    if (task_info) {
+        // Only execute task if it is time
+        if (millis() >= task_info->NextStart) {
+            // Schedule next execution of the task
+            reschedule(task_info);
+
+            // Execute the task
+            task_info->Task->taskStep();
+
+            // Select next task to execute
+            task_info = nextTask();
+        }
     }
+
+    if (task_info) {            
+        // Run the idle task unless it is already time to execute the next task.
+        if (millis() < task_info->NextStart) {
+            if (IdleTask) {
+                IdleTask->taskStep();
+            }
+        }
+    }
+    else if (IdleTask) {
+        // There is no other task, so run the idle task.
+        IdleTask->taskStep();
+    }
+    else {
+        // There is no next task to run
+        return false;
+    }
+
+    // There is at least one task to run in next iteration
+    return true;
+}
+
+void Scheduler::begin(unsigned long timeout)
+{
+    bool useTimeout = (timeout > 0);
 
     if (useTimeout) {
         timeout = millis() + timeout;
     }
 
     while (true) {
-        // Schedule next execution of the task
-        reschedule(task_info);
-
-        // Execute the task
-        task_info->Task->taskStep();
-
-        // Select next task to execute
-        task_info = nextTask();
-        now = millis();
-
-        if (task_info) {            
-            // Sleep until it's time to execute the next task, unless the next
-            // task should already have been started.
-            if (task_info->NextStart > now) {
-                delay(task_info->NextStart - now);
-            }
-        }
-        else {
+        if (!internalStep()) {
             Serial.println("Warning: No more task to execute. Exiting scheduler.");
             break;
         }
@@ -149,31 +170,12 @@ void Scheduler::begin(unsigned long timeout)
         if (useTimeout && millis() >= timeout) {
             break;
         }
-
     }
 }
 
 void Scheduler::step()
 {
-    // Select task to execute
-    TTaskInfo* task_info = nextTask();
-
-    if (task_info == nullptr) {
-        Serial.println("Warning: No more task to execute.");
-        return;
-    }
-
-    unsigned int now = millis();
-    if (!task_info->Started) {
-        task_info->Task->taskStep();
-        reschedule(task_info);
-    } 
-    else {
-        if (now >= task_info->NextStart) {
-            task_info->Task->taskStep();
-            reschedule(task_info);
-        }
-    }
+    internalStep();
 }
 
 TTaskInfo* Scheduler::nextTask()
