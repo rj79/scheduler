@@ -1,0 +1,19 @@
+{
+    "name": "arduino-for-pc",
+    "version": "0.0.1",
+    "description": "Implementation of Arduno framework for running on PC.",
+    "keywords": "",
+    "authors": [
+        {
+            "name": "Robert Johansson",
+            "email": "robertrockar@live.com",
+            "url": "",
+            "maintainer": true
+        }
+    ],
+    "license": "MIT",
+    "homepage": "",
+    "dependencies": {},
+    "frameworks": "*",
+    "platforms": "platformio/native"
+}
