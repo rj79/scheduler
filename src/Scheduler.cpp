@@ -1,4 +1,5 @@
 #include "Scheduler.h"
+#include "watchdog.h"
 
 TTaskInfo::TTaskInfo(ITask* task=nullptr) :
     Task(task),
@@ -162,6 +163,8 @@ void Scheduler::begin(unsigned long timeout)
     }
 
     while (true) {
+        feedWatchdog();
+
         if (!internalStep()) {
             Serial.println("Warning: No more task to execute. Exiting scheduler.");
             break;
