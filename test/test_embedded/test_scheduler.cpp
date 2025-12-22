@@ -110,7 +110,9 @@ void test_both_interval_and_idle_task()
 
 int runUnityTests(void) 
 {
-    delay(500);
+    #ifdef ARDUINO
+    delay(2000);
+    #endif
     UNITY_BEGIN();
 
     RUN_TEST(test_create);
