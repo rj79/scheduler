@@ -23,6 +23,9 @@ example_blink_lolin_c3:
 example_two_tasks_lolin_c3:
 	pio run -e example_two_tasks_lolin_c3_mini -t upload -t monitor
 
+unittest: $(SOURCES)
+	pio test -e unittest
+
 test_arduino_uno: $(SOURCES)
 	pio test -e test_arduino_uno
 
